@@ -1,0 +1,16 @@
+09:50:27.123 [main] INFO  com.fdmgroup.hotelBookingProject.HotelBookingProjectApplicationTests - Starting HotelBookingProjectApplicationTests using Java 17.0.6 with PID 73329 (started by angzhaowei in /Users/angzhaowei/eclipse-workspace/hotelBookingProjectDemo/hotelBookingProject)
+09:50:27.125 [main] DEBUG com.fdmgroup.hotelBookingProject.HotelBookingProjectApplicationTests - Running with Spring Boot v3.0.4, Spring v6.0.6
+09:50:27.125 [main] INFO  com.fdmgroup.hotelBookingProject.HotelBookingProjectApplicationTests - No active profile set, falling back to 1 default profile: "default"
+09:50:29.089 [main] INFO  com.fdmgroup.hotelBookingProject.HotelBookingProjectApplicationTests - Started HotelBookingProjectApplicationTests in 2.095 seconds (process running for 2.81)
+09:50:39.476 [restartedMain] INFO  com.fdmgroup.hotelBookingProject.HotelBookingProjectApplication - Starting HotelBookingProjectApplication using Java 17.0.6 with PID 73348 (/Users/angzhaowei/eclipse-workspace/hotelBookingProjectDemo/hotelBookingProject/target/classes started by angzhaowei in /Users/angzhaowei/eclipse-workspace/hotelBookingProjectDemo/hotelBookingProject)
+09:50:39.478 [restartedMain] DEBUG com.fdmgroup.hotelBookingProject.HotelBookingProjectApplication - Running with Spring Boot v3.0.4, Spring v6.0.6
+09:50:39.478 [restartedMain] INFO  com.fdmgroup.hotelBookingProject.HotelBookingProjectApplication - No active profile set, falling back to 1 default profile: "default"
+09:50:41.314 [restartedMain] INFO  com.fdmgroup.hotelBookingProject.HotelBookingProjectApplication - Started HotelBookingProjectApplication in 1.985 seconds (process running for 2.338)
+09:51:18.776 [http-nio-9001-exec-1] INFO  com.fdmgroup.hotelBookingProject.controller.UserController - 2023-03-19
+09:54:51.273 [restartedMain] INFO  com.fdmgroup.hotelBookingProject.HotelBookingProjectApplication - Starting HotelBookingProjectApplication using Java 17.0.6 with PID 73469 (/Users/angzhaowei/eclipse-workspace/hotelBookingProjectDemo/hotelBookingProject/target/classes started by angzhaowei in /Users/angzhaowei/eclipse-workspace/hotelBookingProjectDemo/hotelBookingProject)
+09:54:51.274 [restartedMain] DEBUG com.fdmgroup.hotelBookingProject.HotelBookingProjectApplication - Running with Spring Boot v3.0.4, Spring v6.0.6
+09:54:51.275 [restartedMain] INFO  com.fdmgroup.hotelBookingProject.HotelBookingProjectApplication - No active profile set, falling back to 1 default profile: "default"
+09:54:53.436 [restartedMain] INFO  com.fdmgroup.hotelBookingProject.HotelBookingProjectApplication - Started HotelBookingProjectApplication in 2.329 seconds (process running for 2.809)
+09:55:15.709 [http-nio-9001-exec-10] INFO  com.fdmgroup.hotelBookingProject.controller.UserController - Room Type is: SINGLE_BED
+09:55:15.709 [http-nio-9001-exec-10] INFO  com.fdmgroup.hotelBookingProject.controller.UserController - Check in date is 2023-03-22
+09:55:15.710 [http-nio-9001-exec-10] INFO  com.fdmgroup.hotelBookingProject.controller.UserController - Check out date is 2023-03-24

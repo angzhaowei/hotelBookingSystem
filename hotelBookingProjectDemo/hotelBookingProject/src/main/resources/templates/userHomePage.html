@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns:th=http://thymeleaf.org>
+<head>
+<meta charset="UTF-8">
+<link href = "css/styles.css" rel = "stylesheet"/>
+<title>UserHomePage</title>
+</head>
+<body>
+
+ 	<div class="wrapper">
+	<div class="container">
+	<h2>User Home Page</h2>
+	
+	<p>Welcome <span th:text="${current_user.username}"></span>!</p>
+	
+	
+	<a href="userExistingBookings" class="button">Click here to check your existing bookings</a>
+	
+	<p></p>
+	
+	<a href="userNewBooking" class="button">Click here to make a new booking</a>
+	
+	<p></p>
+	
+	<a href="logout">Click here to logout</a>
+	
+	</div>
+	</div>
+	
+	
+
+</body>
+</html>

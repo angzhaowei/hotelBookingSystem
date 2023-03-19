@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html xmlns:th=http://thymeleaf.org>
+<head>
+<meta charset="UTF-8">
+<link href = "css/styles.css" rel = "stylesheet"/>
+<title>New Booking</title>
+</head>
+<body>
+
+ 	<div class="wrapper">
+	<div class="container">
+	
+	<h2>New Booking</h2>
+	
+	<p> <span th:text="${current_user.username}"></span></p>
+	
+ 	<form method="post" action="userNewBooking" >
+		<label for="roomType">Select a room type: </label>
+			<select id="roomType" name="roomType">
+				<option th:each="roomType : ${roomTypesList}" th:value="${roomType}" th:text="${roomType}"></option>
+			</select>
+		<br>
+		<label for="checkInDate">Check-in:</label>
+		<input id="checkInDate" type="date" name="checkInDate">
+
+		<label for="checkOutDate">Check-out:</label>
+		<input id="checkOutDate" type="date" name="checkOutDate">
+		<br>
+		<input type="submit" value="Create Booking"/>
+	</form> 
+	
+<!-- 	<select>
+				<option th:each="room : ${roomTypesList}" th:value="${room}" th:text="${room}"></option>
+	</select> -->
+
+<!-- 	<h2>Create Booking</h2>
+	<form action="userNewBooking" method="post">
+		<label for="roomType">Room Type:</label>
+		<select id="roomType" name="roomType">
+			<option value="single_bed">Single Bed</option>
+			  <option value="double_bed">Double Bed</option>
+			  <option value="double_bed_balcony">Double Bed with Balcony</option>
+			  <option value="double_bed_bathtub">Double Bed with Bathtub</option>
+		</select>
+		<br>
+		<label for="checkInDate">Check-in:</label>
+		<input id="checkInDate" type="date" name="checkInDate">
+		<br>
+		<label for="checkOutDate">Check-out:</label>
+		<input id="checkOutDate" type="date" name="checkOutDate">
+		<br>
+		<input type="submit" value="Create"/>
+	</form> -->
+
+
+
+<!-- th:object="${roomTypesList} -->
+
+
+	<a href="userExistingBookings">Click here to check your existing bookings</a>
+	
+	<p></p>
+	
+	<a href="logout">Click here to logout</a>
+	
+	</div>
+	</div>
+	
+	
+
+</body>
+</html>
