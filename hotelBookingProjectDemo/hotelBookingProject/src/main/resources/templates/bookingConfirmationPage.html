@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th=http://thymeleaf.org>
+<head>
+<meta charset="UTF-8">
+<link href = "css/styles.css" rel = "stylesheet"/>
+<title>Booking Confirmation</title>
+</head>
+<body>
+
+ 	<div class="wrapper">
+	<div class="container">
+	<h2>Booking Confirmation</h2>
+	
+	<p><span th:text="${current_user.username}"></span>!</p>
+	
+	<p>Your selected Room Type: <span th:text="${current_roomType}"></span></p>
+	
+	<p>Your selected Check In Date: <span th:text="${current_checkInDate}"></span></p>
+	
+	<p>Your selected Check Out Date: <span th:text="${current_checkOutDate}"></span></p>
+	
+	<form method="post" action="bookingConfirmationPage">
+		<input type="submit" value="confirm">
+	</form>
+	
+	<a href="userExistingBookings" class="button"> Alternatively , click here to check your existing bookings</a>
+	
+	<p></p>
+	
+	<a href="userNewBooking" class="button">Or click here to make a new booking</a>
+	
+	<p></p>
+	
+	<a href="logout">Click here to logout</a>
+	
+	</div>
+	</div>
+	
+	
+
+</body>
+</html>

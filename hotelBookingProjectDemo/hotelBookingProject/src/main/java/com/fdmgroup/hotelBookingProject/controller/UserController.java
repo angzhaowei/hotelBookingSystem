@@ -1,5 +1,8 @@
 package com.fdmgroup.hotelBookingProject.controller;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -16,9 +19,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttributes;
 
+import com.fdmgroup.hotelBookingProject.model.Booking;
 import com.fdmgroup.hotelBookingProject.model.Room;
 import com.fdmgroup.hotelBookingProject.model.User;
 import com.fdmgroup.hotelBookingProject.service.BookingService;
+import com.fdmgroup.hotelBookingProject.service.DateService;
 import com.fdmgroup.hotelBookingProject.service.RoomService;
 import com.fdmgroup.hotelBookingProject.service.UserService;
 import com.fdmgroup.hotelBookingProject.constants.RoomType;
@@ -39,6 +44,9 @@ public class UserController {
 	
 	@Autowired
 	private BookingService bookingService;
+	
+	@Autowired
+	private DateService dateService;
 	
 	Logger logger = LogManager.getLogger();
 
@@ -105,9 +113,15 @@ public class UserController {
 			return "redirect:/userHomePage";
 		}
 		else {
-			return "login";
+			return "redirect:/loginErrorTryAgain";
 		}
 		
+	}
+	
+	// cases where login fails
+	@GetMapping("/loginErrorTryAgain")
+	public String goToLoginErrorTryAgain() {
+		return "loginErrorTryAgain";
 	}
 	
 	@GetMapping("/userHomePage")
@@ -159,72 +173,159 @@ public class UserController {
 		User user = userService.findUserByUsername(username);
 		model.addAttribute("current_user", user);
 		
+		// date validity check
+		if(checkInDate.isBlank() || checkOutDate.isBlank()) {
+			return"redirect:/userNewBookingAgainEmptyDates";
+		}
+		else if (!dateService.checkIfStartDateBeforeEndDate(checkInDate, checkOutDate)) {
+			return "redirect:/userNewBookingAgainWrongDates";
+		}
+		
 		// needed cuz the roomType is a string
 		RoomType rType = RoomType.valueOf(roomType);
 		
-		switch (rType) {
-		case SINGLE_BED:
-			if(roomService.stillHaveRooms(rType)) {
-				logger.info("still have single rooms");
-			}
-			return "redirect:/singleBedPage";
-		case DOUBLE_BED:
-			return "redirect:/doubleBedPage";
-		case DOUBLE_BED_BALCONY:
-			return "redirect:/doubleBedBalconyPage";
-		case DOUBLE_BED_BATHTUB:
-			return"redirect:/doubleBedBathPage";
-			default:
-				return "redirect:/singleBedPage";
+		// room availability check
+		
+		if(roomService.atLeastOneRoomWithDatesAvailable(rType, checkInDate, checkInDate)) {
+			
+			Room room = roomService.getRoomWithAvailableDates(rType, checkInDate, checkOutDate);
+			logger.info("room chosen: " + room.getRoomId());
+			logger.info("Room reservedDates: "+ room.getReservedDates().toString());
+			LocalDate checkIn = dateService.convertFromStringToLocalDate(checkInDate);
+			LocalDate checkOut = dateService.convertFromStringToLocalDate(checkOutDate);
+			Booking booking = new Booking(user, room, checkIn,checkOut);
+			
+			logger.info("There is at least one room available for: "+rType);
+			logger.info("Booking tentative for:"+booking.toString());
+			
+			session.setAttribute("current_roomType", roomType);
+			session.setAttribute("current_checkIn", checkInDate);
+			session.setAttribute("current_checkOut", checkOutDate);
+			session.setAttribute("room", room);
+			
+			return "redirect:/bookingConfirmationPage";
+		} 
+		else {
+			return "/userNewBookingAgainDatesUnavailable";
 		}
-//			if(roomType.equals()) {
-//				
-//				// need to do smth to check:
-//				// is check in date before check out date
-//				// is there enuf rooms
-//				//
-//				
+		
+//		switch (rType) {
+//		case SINGLE_BED:
+//			List<Room> roomsList = roomService.getRoomsListByRoomType(rType);
+//			logger.info("Rooms: "+roomsList);
+//			if(roomService.stillHaveRooms(rType)) {
+//				logger.info("still have room type, still have rooms for that day");
+//			}
+//			return "redirect:/singleBedPage";
+//		case DOUBLE_BED:
+//			return "redirect:/doubleBedPage";
+//		case DOUBLE_BED_BALCONY:
+//			return "redirect:/doubleBedBalconyPage";
+//		case DOUBLE_BED_BATHTUB:
+//			return"redirect:/doubleBedBathPage";
+//			default:
 //				return "redirect:/singleBedPage";
-//			}
-//			else if(roomType.equals("double_bed")) {
-//				return "redirect:/doubleBedPage";
-//			}
-//			else if(roomType.equals("double_bed_balcony")) {
-//				return "redirect:/doubleBedBalconyPage";
-//			}
-//			else {
-//				return "redirect:/doubleBedBathPage";
-//			}
+//		}
 
 	}
 	
 	
-//	@GetMapping("/singleBedPage")
-//	public String gotToSingleBedPage(HttpSession session, Model model) {
-//		
-//		String username = (String) session.getAttribute("current_user");
-//		User user = userService.findUserByUsername(username);
-//		model.addAttribute("current_user", user);
-//		
-//		session.setAttribute("room_type", "single_bed");
-//		
-//		return "singleBedPage";
-//		
-//	}
-//	
-//	@PostMapping("/singleBedPage")
-//	public String selectStartDate(@RequestParam("start_date") String startDate, HttpSession session, Model model) {
-//		
-//		String username = (String) session.getAttribute("current_user");
-//		User user = userService.findUserByUsername(username);
-//		model.addAttribute("current_user", user);
-//		
-//		System.out.println(startDate);
-//		
-//		return "selectEndDate";
-//	}
-//	
-//	
+	@GetMapping("/userNewBookingAgainEmptyDates")
+	public String goToChooseBookingAgainEmptyDates(HttpSession session, Model model) {
+		
+		String username = (String) session.getAttribute("current_user");
+		User user = userService.findUserByUsername(username);
+		model.addAttribute("current_user", user);
+		
+		model.addAttribute("roomTypesList", Room.getRoomTypesAsList());
+		
+		return"/userNewBookingAgainEmptyDates";
+	}
+	
+	@GetMapping("/userNewBookingAgainWrongDates")
+	public String goToChooseBookingAgainWrongDates(HttpSession session, Model model) {
+		
+		String username = (String) session.getAttribute("current_user");
+		User user = userService.findUserByUsername(username);
+		model.addAttribute("current_user", user);
+		
+		model.addAttribute("roomTypesList", Room.getRoomTypesAsList());
+		
+		return"/userNewBookingAgainWrongDates";
+	}
+	
+	@GetMapping("/userNewBookingAgainDatesUnavailable")
+	public String goToChooseBookingAgainDatesUnavailable(HttpSession session, Model model) {
+		
+		String username = (String) session.getAttribute("current_user");
+		User user = userService.findUserByUsername(username);
+		model.addAttribute("current_user", user);
+		
+		model.addAttribute("roomTypesList", Room.getRoomTypesAsList());
+		
+		return"/userNewBookingAgainDatesUnavailable";
+	}
+	
+	@GetMapping("/bookingConfirmationPage")
+	public String goToConfirmationPage(HttpSession session, Model model) {
+		
+		String username = (String) session.getAttribute("current_user");
+		User user = userService.findUserByUsername(username);
+		model.addAttribute("current_user", user);
+		
+		String rType = (String) session.getAttribute("current_roomType");
+		model.addAttribute("current_roomType", rType);
+		
+		String checkInDate = (String) session.getAttribute("current_checkIn");
+		model.addAttribute("current_checkInDate", checkInDate);
+		
+		String checkOutDate = (String) session.getAttribute("current_checkOut");
+		model.addAttribute("current_checkOutDate", checkOutDate);
+		
+		return "/bookingConfirmationPage";
+		
+	}
+	
+	@PostMapping("/bookingConfirmationPage")
+	public String confirmationBooking(HttpSession session, Model model) {
+		
+		String username = (String) session.getAttribute("current_user");
+		User user = userService.findUserByUsername(username);
+		model.addAttribute("current_user", user);
+		
+		String rType = (String) session.getAttribute("current_roomType");
+		model.addAttribute("current_roomType", rType);
+		RoomType roomType = RoomType.valueOf(rType);
+		
+		String checkInDate = (String) session.getAttribute("current_checkIn");
+		model.addAttribute("current_checkInDate", checkInDate);
+		LocalDate checkIn = dateService.convertFromStringToLocalDate(checkInDate);
+		
+		String checkOutDate = (String) session.getAttribute("current_checkOut");
+		model.addAttribute("current_checkOutDate", checkOutDate);
+		LocalDate checkOut = dateService.convertFromStringToLocalDate(checkOutDate);
+		
+		Room room = (Room) session.getAttribute("room");
+		
+		Booking booking = new Booking(user,room, checkIn, checkOut);
+		bookingService.confirmBooking(booking);
+		room.addToRoomReservedDatesList(booking);
+		
+		return "redirect:/afterBookingPage";
+		
+	}
+	
+	@GetMapping("/afterBookingPage")
+	public String goToAfterBookingPage(HttpSession session,  Model model) {
+		
+		String username = (String) session.getAttribute("current_user");
+		User user = userService.findUserByUsername(username);
+		model.addAttribute("current_user", user);
+		
+		return "/afterBookingPage";
+	}
+	
+	
 	
 	
 	@GetMapping("/logout")

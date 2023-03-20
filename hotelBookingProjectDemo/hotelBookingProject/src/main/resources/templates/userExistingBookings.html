@@ -23,17 +23,17 @@
 	<h2>User Bookings</h2>
 	<table>
 		<tr>
-			<th>ID</th>
+			<th>Booking Id</th>
 			<th>Room Type</th>
 			<th>Check-in</th>
 			<th>Check-out</th>
 		</tr>
 		<tbody>
-			<tr th:each="current_user : ${current_user.bookings}">
-					<td>${bookings.id}</td>
-					<td>${bookings.roomType}</td>
-					<td>${bookings.checkInDate}</td>
-					<td>${bookings.checkOutDate}</td>
+			<tr th:each="booking : ${current_user.bookings}">
+					<td th:text="${booking.bookingId}"></td>
+					<td th:text="${booking.roomBooked.roomType}"></td>
+					<td th:text="${booking.checkInDate}"></td>
+					<td th:text="${booking.checkOutDate}"></td>
 				</tr>
 			</tbody>
 		</tbody>

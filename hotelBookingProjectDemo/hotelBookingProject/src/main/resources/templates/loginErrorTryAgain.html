@@ -1,24 +1,25 @@
 <!DOCTYPE html>
-<html xmlns:th=http://thymeleaf.org>
+<html>
 <head>
 <meta charset="UTF-8">
 <link href = "css/styles.css" rel = "stylesheet"/>
-<title>Register</title>
+<title>Login</title>
 </head>
 <body>
 
 	<div class="wrapper">
 	<div class="container">
-	<h2>Register a new user</h2>
+	<h2>Login</h2>
 	
-	<form method="post" action="register" >
+	<form method="post" action="login">
 		<input type="text" name="username" placeholder="username">
 		<input type="password" name="password" placeholder="password">
-		<input type="submit" value="register">
-		<p>That username is invalid, or already taken, choose a new username.</p>
+		<input type="submit" value="login">
 	</form>
 	
-	<a href="login">Alternatively, click here to login</a>
+	<p>Login error, try again with a different username or password!</p>
+	
+	<a href="register" class="button">Alternatively, click here to register</a>
 	</div>
 	</div>
 

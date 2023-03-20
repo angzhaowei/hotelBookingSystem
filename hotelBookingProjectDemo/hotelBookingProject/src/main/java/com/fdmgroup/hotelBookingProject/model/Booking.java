@@ -25,15 +25,22 @@ public class Booking {
 	@ManyToOne
 	private Room roomBooked;
 	
-	@DateTimeFormat(pattern = "yyyy-MM-dd")
-	private Date checkInDate;
+	@DateTimeFormat(pattern = "dd-MM-yyyy")
+	private LocalDate checkInDate;
 	
-	@DateTimeFormat(pattern = "yyyy-MM-dd")
-	private Date checkOutDate;
+	@DateTimeFormat(pattern = "dd-MM-yyyy")
+	private LocalDate checkOutDate;
 
 	public Booking() {
 		super();
-		// TODO Auto-generated constructor stub
+	}
+	
+	public Booking(User userThatMadeBooking, Room roomBooked, LocalDate checkInDate, LocalDate checkOutDate) {
+		super();
+		this.userThatMadeBooking = userThatMadeBooking;
+		this.roomBooked = roomBooked;
+		this.checkInDate = checkInDate;
+		this.checkOutDate = checkOutDate;
 	}
 
 	public long getBookingId() {
@@ -61,21 +68,28 @@ public class Booking {
 		this.roomBooked = roomBooked;
 	}
 
-	public Date getCheckInDate() {
+	public LocalDate getCheckInDate() {
 		return checkInDate;
 	}
 
-	public void setCheckInDate(Date checkInDate) {
+	public void setCheckInDate(LocalDate checkInDate) {
 		this.checkInDate = checkInDate;
 	}
 
-	public Date getCheckOutDate() {
+	public LocalDate getCheckOutDate() {
 		return checkOutDate;
 	}
 
-	public void setCheckOutDate(Date checkOutDate) {
+	public void setCheckOutDate(LocalDate checkOutDate) {
 		this.checkOutDate = checkOutDate;
 	}
+
+	@Override
+	public String toString() {
+		return "userThatMadeBooking=" + userThatMadeBooking.getUsername() + ", roomBooked="
+				+ roomBooked.getRoomId() + ", checkInDate=" + checkInDate + ", checkOutDate=" + checkOutDate + "]";
+	}
+
 
 
 	

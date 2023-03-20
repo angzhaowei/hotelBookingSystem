@@ -12,8 +12,7 @@ import com.fdmgroup.hotelBookingProject.model.Room;
 @Repository
 public interface RoomRepository extends JpaRepository<Room, Long> {
 
-	public Optional<List<Room>> findByRoomType(RoomType roomType);
-
+	public List<Room> findAllByRoomType(RoomType roomType);
 
 
 }

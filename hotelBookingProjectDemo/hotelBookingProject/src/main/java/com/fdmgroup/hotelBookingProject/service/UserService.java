@@ -47,8 +47,10 @@ public class UserService {
 	public boolean verifyUser(String username, String pw) {
 		
 		Optional<User> userOptional = userRepo.findByUsername(username);
-		
-		if(userOptional.get().getPassword().equals(pw)) {
+		if(!userOptional.isPresent()) {
+			return false;
+		}
+		else if(userOptional.get().getPassword().equals(pw)) {
 			return true;
 		} else {
 			return false;

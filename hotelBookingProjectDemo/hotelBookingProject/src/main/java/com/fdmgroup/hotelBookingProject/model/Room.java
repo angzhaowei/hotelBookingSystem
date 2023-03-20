@@ -6,12 +6,18 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
-import com.fdmgroup.hotelBookingProject.constants.RoomType;
+import org.springframework.beans.factory.annotation.Autowired;
 
+import com.fdmgroup.hotelBookingProject.constants.RoomType;
+import com.fdmgroup.hotelBookingProject.service.DateService;
+
+import jakarta.persistence.CollectionTable;
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 
 @Entity
 public class Room {
@@ -20,17 +26,11 @@ public class Room {
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	private long roomId;
 	
-//	public enum RoomType{
-//		SINGLE_BED,
-//		DOUBLE_BED,
-//		DOUBLE_BED_BALCONY,
-//		DOUBLE_BED_BATHTUB;
-//		
-//	};
-	
 	private RoomType roomType;
 	
-	private ArrayList<Date> reservedDates;
+//	@ElementCollection
+//	@CollectionTable(name="room_reserved_dates", joinColumns= {@JoinColumn(name = "room_id")})
+	private ArrayList<LocalDate> reservedDates = new ArrayList<>();
 
 	
 	public Room() {
@@ -45,17 +45,18 @@ public class Room {
 //	public void setRoomId(long roomId) {
 //		this.roomId = roomId;
 //	}
-
-	public ArrayList<Date> getReservedDates() {
-		return reservedDates;
-	}
-
-	public void setReservedDates(ArrayList<Date> reservedDates) {
-		this.reservedDates = reservedDates;
-	}
+	
 
 	public RoomType getRoomType() {
 		return roomType;
+	}
+
+	public ArrayList<LocalDate> getReservedDates() {
+		return reservedDates;
+	}
+
+	public void setReservedDates(ArrayList<LocalDate> reservedDates) {
+		this.reservedDates = reservedDates;
 	}
 
 	public void setRoomType(RoomType roomType) {
@@ -71,5 +72,21 @@ public class Room {
 		return roomTypes;
 		
 	}
+	
+	
+	public void addToRoomReservedDatesList(Booking booking) {		
+		
+		LocalDate start = booking.getCheckInDate();
+		LocalDate end = booking.getCheckOutDate();
+		
+		DateService dateService = new DateService();
+		
+		ArrayList<LocalDate> datesWithin = dateService.getAllDatesWithin(start, end);
+		
+		for (LocalDate date: datesWithin) {
+			reservedDates.add(date);
+		}
+		
+;	}
 	
 }
