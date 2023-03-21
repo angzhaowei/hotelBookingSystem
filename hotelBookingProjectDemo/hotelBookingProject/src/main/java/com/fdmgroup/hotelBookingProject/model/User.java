@@ -3,6 +3,8 @@ package com.fdmgroup.hotelBookingProject.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.stereotype.Component;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -12,6 +14,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 
 @Entity
+@Component
 public class User {
 
 	@Id
@@ -65,6 +68,10 @@ public class User {
 
 	public void setBookings(ArrayList<Booking> bookings) {
 		this.bookings = bookings;
+	}
+	
+	public void addBooking(Booking booking) {
+		this.bookings.add(booking);
 	}
 	
 	

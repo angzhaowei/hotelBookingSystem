@@ -5,9 +5,12 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import com.fdmgroup.hotelBookingProject.model.ReservedDate;
 
 @Service
 public class DateService {
@@ -52,6 +55,21 @@ public class DateService {
             date = date.plusDays(1);
         }
         return dateRange;
+	}
+
+	public boolean checkForDatesClash(ArrayList<LocalDate> desiredDates, List<ReservedDate> eachRoomDates) {
+		// true means date clash, room isnt available on those dates
+		// false means no date clash
+
+		// extract out all the LocalDates from the ReservedDates
+		ArrayList<LocalDate> reservedDates = new ArrayList<LocalDate>();
+		for(ReservedDate rDate: eachRoomDates) {
+			reservedDates .add(rDate.getDate());
+		}
+		
+		// time to compare both lists
+		return desiredDates.stream().anyMatch(reservedDates::contains);
+		
 	}
 
 	

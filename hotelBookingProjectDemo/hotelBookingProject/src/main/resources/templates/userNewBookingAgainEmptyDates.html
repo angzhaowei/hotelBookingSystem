@@ -14,6 +14,10 @@
 	
 	<p> <span th:text="${current_user.username}"></span></p>
 	
+	<p>Neither of the dates should be empty.</p>
+	
+	<p>Choose again please.</p>
+	
  	<form method="post" action="userNewBooking" >
 		<label for="roomType">Select a room type: </label>
 			<select id="roomType" name="roomType">
@@ -29,7 +33,7 @@
 		<input type="submit" value="Create Booking"/>
 	</form> 
 	
-	<p>Dates cannot be empty! Choose the dates!</p>
+
 	
 <!-- 	<select>
 				<option th:each="room : ${roomTypesList}" th:value="${room}" th:text="${room}"></option>

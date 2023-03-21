@@ -2,15 +2,19 @@ package com.fdmgroup.hotelBookingProject.model;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
+import java.sql.Date;
 import java.util.HashMap;
 import java.util.List;
 
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.fdmgroup.hotelBookingProject.constants.RoomType;
 import com.fdmgroup.hotelBookingProject.service.DateService;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
@@ -18,6 +22,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToMany;
 
 @Entity
 public class Room {
@@ -28,9 +33,15 @@ public class Room {
 	
 	private RoomType roomType;
 	
-//	@ElementCollection
-//	@CollectionTable(name="room_reserved_dates", joinColumns= {@JoinColumn(name = "room_id")})
-	private ArrayList<LocalDate> reservedDates = new ArrayList<>();
+	//private ArrayList<LocalDate> reservedDates = new ArrayList<>();
+	
+	//@OneToMany(mappedBy="room")
+    //private List<LocalDate> reservedDates = new ArrayList<>();
+	
+	//@OneToMany(mappedBy = "room", cascade = CascadeType.ALL, orphanRemoval = true)
+	@OneToMany(mappedBy = "room")
+	@Fetch(FetchMode.JOIN)
+	private List<ReservedDate> reservedDates = new ArrayList<>();
 
 	
 	public Room() {
@@ -51,20 +62,22 @@ public class Room {
 		return roomType;
 	}
 
-	public ArrayList<LocalDate> getReservedDates() {
+//	public List<LocalDate> getReservedDates() {
+//		return reservedDates;
+//	}
+
+	public List<ReservedDate> getReservedDates() {
 		return reservedDates;
 	}
 
-	public void setReservedDates(ArrayList<LocalDate> reservedDates) {
-		this.reservedDates = reservedDates;
-	}
 
 	public void setRoomType(RoomType roomType) {
 		this.roomType = roomType;
 	}
 	
-	public static List<String> getRoomTypesAsList(){
-		List<String> roomTypes = new ArrayList<String>();
+
+	public static ArrayList<String> getRoomTypesAsList(){
+		ArrayList<String> roomTypes = new ArrayList<String>();
 		for (RoomType roomType: RoomType.values()) {
 			roomTypes.add(roomType.toString());
 		
@@ -74,19 +87,32 @@ public class Room {
 	}
 	
 	
-	public void addToRoomReservedDatesList(Booking booking) {		
-		
-		LocalDate start = booking.getCheckInDate();
-		LocalDate end = booking.getCheckOutDate();
-		
+//	public void addToRoomReservedDatesList(Booking booking) {		
+//		
+//		LocalDate start = booking.getCheckInDate();
+//		LocalDate end = booking.getCheckOutDate();
+//		
+//		DateService dateService = new DateService();
+//		
+//		ArrayList<LocalDate> datesWithin = dateService.getAllDatesWithin(start, end);
+//		
+//		for (LocalDate date: datesWithin) {
+//			reservedDates.add(date);
+//		}
+//		
+//	}
+	
+	
+	public void addToRoomReservedDatesList(Booking booking) {
+	    
 		DateService dateService = new DateService();
 		
-		ArrayList<LocalDate> datesWithin = dateService.getAllDatesWithin(start, end);
-		
-		for (LocalDate date: datesWithin) {
-			reservedDates.add(date);
-		}
-		
-;	}
+		List<LocalDate> bookedDates = dateService.getAllDatesWithin(booking.getCheckInDate(), booking.getCheckOutDate());
+
+	    for (LocalDate date : bookedDates) {
+	        reservedDates.add(new ReservedDate(this, date));
+	    }
+	    
+	}
 	
 }

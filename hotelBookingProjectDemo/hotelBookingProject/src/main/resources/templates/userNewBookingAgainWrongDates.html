@@ -14,6 +14,10 @@
 	
 	<p> <span th:text="${current_user.username}"></span></p>
 	
+	<p>Check in date must be before check out date!</p>
+	
+	<p>Choose again please.</p
+	
  	<form method="post" action="userNewBooking" >
 		<label for="roomType">Select a room type: </label>
 			<select id="roomType" name="roomType">
@@ -29,7 +33,7 @@
 		<input type="submit" value="Create Booking"/>
 	</form> 
 	
-	<p>Check in date must be before check out date! Choose again please.</p>
+
 <!-- 	<select>
 				<option th:each="room : ${roomTypesList}" th:value="${room}" th:text="${room}"></option>
 	</select> -->

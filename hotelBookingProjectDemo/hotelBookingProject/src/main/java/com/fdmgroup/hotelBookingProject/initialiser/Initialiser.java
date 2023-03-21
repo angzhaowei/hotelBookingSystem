@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import com.fdmgroup.hotelBookingProject.constants.RoomType;
@@ -38,7 +39,8 @@ public class Initialiser {
 	private BookingRepository bookingRepo;
 	
 	@Autowired
-	private DateService dateService;
+	private BCryptPasswordEncoder passwordEncoder;
+	
 	
 	@PostConstruct
     public void init() {
@@ -55,7 +57,7 @@ public class Initialiser {
 		}
 		
 		// create this user everytime it reruns
-		User user1 = new User("user1","pw1");
+		User user1 = new User("user1",passwordEncoder.encode("pw1"));
 		userRepo.save(user1);
 
 		
@@ -70,8 +72,13 @@ public class Initialiser {
 		// got 5 rooms, create booking for 5 rooms on these dates!
 		for (int i =0; i<5; i++) {
 			Booking booking = new Booking(user,rooms.get(i), checkInDate, checkOutDate);
+//			bookingRepo.save(booking);
+//			rooms.get(i).addToRoomReservedDatesList(booking);
+//			roomService.confirmReservedDates(booking);
+			user.addBooking(booking);
 			bookingRepo.save(booking);
 			rooms.get(i).addToRoomReservedDatesList(booking);
+			roomService.confirmReservedDates(booking);
 		}
     }
 }
