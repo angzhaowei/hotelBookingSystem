@@ -72,9 +72,6 @@ public class Initialiser {
 		// got 5 rooms, create booking for 5 rooms on these dates!
 		for (int i =0; i<5; i++) {
 			Booking booking = new Booking(user,rooms.get(i), checkInDate, checkOutDate);
-//			bookingRepo.save(booking);
-//			rooms.get(i).addToRoomReservedDatesList(booking);
-//			roomService.confirmReservedDates(booking);
 			user.addBooking(booking);
 			bookingRepo.save(booking);
 			rooms.get(i).addToRoomReservedDatesList(booking);

@@ -25,6 +25,7 @@
 		<tr>
 			<th>Booking Id</th>
 			<th>Room Type</th>
+			<th>Room Id</th>
 			<th>Check-in</th>
 			<th>Check-out</th>
 		</tr>
@@ -32,6 +33,7 @@
 			<tr th:each="booking : ${current_user.bookings}">
 					<td th:text="${booking.bookingId}"></td>
 					<td th:text="${booking.roomBooked.roomType}"></td>
+					<td th:text="${booking.roomBooked.roomId}"></td>
 					<td th:text="${booking.checkInDate}"></td>
 					<td th:text="${booking.checkOutDate}"></td>
 				</tr>

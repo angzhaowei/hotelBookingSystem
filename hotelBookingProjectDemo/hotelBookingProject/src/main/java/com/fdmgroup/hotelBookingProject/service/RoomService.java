@@ -7,6 +7,8 @@ import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -36,18 +38,6 @@ public class RoomService {
 		return room.get();
 	}
 
-//	public boolean stillHaveRooms(RoomType roomType) {
-//
-//		// dont need optional, will just output empty list if dun have
-//		//Optional<List<Room>> roomsOptional = roomRepo.findListByRoomType(roomType);
-//		List<Room> roomsList = roomRepo.findAllByRoomType(roomType);
-//
-//		if (roomsList.isEmpty()) {
-//			return false;
-//		} else return true;
-//		
-//	}
-
 	public List<Room> getRoomsListByRoomType(RoomType roomType){
 		
 		List<Room> roomsList = roomRepo.findAllByRoomType(roomType);
@@ -55,6 +45,8 @@ public class RoomService {
 	}
 	
 	public boolean atLeastOneRoomWithDatesAvailable(RoomType roomType, String startDate, String endDate) {
+		
+		Logger logger = LogManager.getLogger();
 		
 		// get all rooms of the type first
 		List<Room> roomsList = roomRepo.findAllByRoomType(roomType);
@@ -67,16 +59,24 @@ public class RoomService {
 		// get the desired days
 		ArrayList<LocalDate> desiredDates = dateService.getAllDatesWithin(checkInDate, checkOutDate);
 		
+		logger.info("desiredDates: "+desiredDates.toString());
+		
+		
 		// for each room, check that got no clashes
 		int roomsAvailable = 0;
 		for(Room eachRoom: roomsArrayList) {
 			List<ReservedDate> eachRoomDates = eachRoom.getReservedDates();
+			
 			if(!dateService.checkForDatesClash(desiredDates,eachRoomDates)) {
 				// need the ! because true means date clash, room isnt available on those dates
+				logger.info("Room with id "+ eachRoom.getRoomId()+ " is available on those dates.");
 				roomsAvailable ++;
+			} else {
+				logger.info("Room with id "+ eachRoom.getRoomId()+ " is not available on those dates.");
 			}
 		}
 		
+		logger.info("number of rooms available: "+roomsAvailable);
 		if(roomsAvailable>=1) {
 			return true;
 		} else return false;
@@ -88,6 +88,8 @@ public class RoomService {
 
 	// basically the same as the checking, but now return the first room
 	public Room getRoomWithAvailableDates(RoomType roomType, String startDate, String endDate) {
+		
+		Logger logger = LogManager.getLogger();
 		
 		// get all rooms of the type first
 		List<Room> roomsList = roomRepo.findAllByRoomType(roomType);
@@ -107,6 +109,7 @@ public class RoomService {
 				if(!dateService.checkForDatesClash(desiredDates,eachRoomDates)) {
 				// need the ! because true means date clash, room isnt available on those dates
 				chosenRoom = eachRoom;
+				logger.info("Allocated room is room with id "+ chosenRoom.getRoomId());
 				break;
 			}
 		}
@@ -116,11 +119,15 @@ public class RoomService {
 	
 	public void confirmReservedDates(Booking booking) {
 		
+		Logger logger = LogManager.getLogger();
+		
 		List<LocalDate> bookedDates = dateService.getAllDatesWithin(booking.getCheckInDate(), booking.getCheckOutDate());
 
 	    for (LocalDate date : bookedDates) {
 	        ReservedDate rDate = new ReservedDate(booking.getRoomBooked(), date);
 	        reservedDateRepo.save(rDate);
+	        
+	        logger.info("Date "+date+" is reserved for room "+ booking.getRoomBooked().getRoomId());
 	    }
 	    
 		

@@ -33,11 +33,6 @@ public class Room {
 	
 	private RoomType roomType;
 	
-	//private ArrayList<LocalDate> reservedDates = new ArrayList<>();
-	
-	//@OneToMany(mappedBy="room")
-    //private List<LocalDate> reservedDates = new ArrayList<>();
-	
 	//@OneToMany(mappedBy = "room", cascade = CascadeType.ALL, orphanRemoval = true)
 	@OneToMany(mappedBy = "room")
 	@Fetch(FetchMode.JOIN)
@@ -52,19 +47,10 @@ public class Room {
 	public long getRoomId() {
 		return roomId;
 	}
-
-//	public void setRoomId(long roomId) {
-//		this.roomId = roomId;
-//	}
 	
-
 	public RoomType getRoomType() {
 		return roomType;
 	}
-
-//	public List<LocalDate> getReservedDates() {
-//		return reservedDates;
-//	}
 
 	public List<ReservedDate> getReservedDates() {
 		return reservedDates;
@@ -85,22 +71,6 @@ public class Room {
 		return roomTypes;
 		
 	}
-	
-	
-//	public void addToRoomReservedDatesList(Booking booking) {		
-//		
-//		LocalDate start = booking.getCheckInDate();
-//		LocalDate end = booking.getCheckOutDate();
-//		
-//		DateService dateService = new DateService();
-//		
-//		ArrayList<LocalDate> datesWithin = dateService.getAllDatesWithin(start, end);
-//		
-//		for (LocalDate date: datesWithin) {
-//			reservedDates.add(date);
-//		}
-//		
-//	}
 	
 	
 	public void addToRoomReservedDatesList(Booking booking) {

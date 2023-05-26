@@ -63,6 +63,8 @@ public class UserController {
 	public String goToRegisterPage(Model model) {
 		
 		model.addAttribute("user", new User());
+		logger.info("Navigated to register user page");
+		logger.info("\n");
 		
 		return "register";
 	}
@@ -71,9 +73,17 @@ public class UserController {
 	public String registerUser(@RequestParam String username, @RequestParam("password") String pw) {
 		
 		if(userService.registerUser(username,pw)) {
+			
+			logger.info("User "+ username +" has been registered!");
+			logger.info("\n");
+			
 			return "redirect:/login";
 		}
 		else {
+			
+			logger.info("Registration failed.");
+			logger.info("\n");
+			
 			return "registerUserAlreadyExists";
 		}
 
@@ -90,9 +100,17 @@ public class UserController {
 	public String registerUserAlreadyExists(User user) {
 		
 		if(userService.registerUser(user.getUsername(),user.getPassword())) {
+			
+			logger.info("User "+ user.getUsername() +" has been registered!");
+			logger.info("\n");
+			
 			return "redirect:/login";
 		}
 		else {
+			
+			logger.info("Registration failed.");
+			logger.info("\n");
+			
 			return "registerUserAlreadyExists";
 		}
 
@@ -100,67 +118,41 @@ public class UserController {
 	
 	@GetMapping("/login")
 	public String goToLogin() {
+		
+		logger.info("Navigated to login page");
+		logger.info("\n");
+		
 		return "login";
 	}
 	
-//	@PostMapping("/login")
-//	public String verifyUser(@RequestParam String username, 
-//			@RequestParam("password") String pw, 
-//			HttpSession session, Model model) {
-//		
-//		if(userService.verifyUser(username,pw)) {
-//			
-//			session.setAttribute("current_user", username);
-//
-//			return "redirect:/userHomePage";
-//		}
-//		else {
-//			return "redirect:/loginErrorTryAgain";
-//		}
-//		
-//	}
 	
-	// cases where login fails
-	@GetMapping("/loginErrorTryAgain")
-	public String goToLoginErrorTryAgain() {
-		return "loginErrorTryAgain";
-	}
 	
 	@GetMapping("/userHomePage")
 	public String goToUserHomePage(Principal principal, HttpSession session, Model model) {
 		
 		//String username = (String) session.getAttribute("current_user");
 		String username = principal.getName();
+		
+		logger.info("User "+ username +" has logged in!");
+		logger.info("\n");
+		
 		//session.setAttribute("current_user", username);
 		User user = userService.findUserByUsername(username);
 		model.addAttribute("current_user", user);
 		
-		
-//		model.addAttribute("current_userObject", principal);
-//		model.addAttribute("current_user", principal.getName());
-		
 		return "userHomePage";
 	}
-	
-//	@GetMapping("/userHomePage")
-//	public String goToUserHomePage(@AuthenticationPrincipal Principal principal) {
-//		
-//		principal.getName();
-//		
-//		String username = (String) session.getAttribute("current_user");
-//		User user = userService.findUserByUsername(username);
-//		model.addAttribute("current_user", user);
-//		
-//		return "userHomePage";
-//	}
 	
 	
 	@GetMapping("/userExistingBookings")
 	public String goToExistingBookingsPage(HttpSession session, Model model) {
 		
-		//String username = (String) session.getAttribute("current_user");
-		//User user = userService.findUserByUsername(username);
 		model.addAttribute("current_user", session.getAttribute("current_user"));
+		
+		User user = (User) session.getAttribute("current_user");
+		
+		logger.info("User "+ user.getUsername() +" navigated to existing bookings!");
+		logger.info("\n");
 		
 		return "userExistingBookings";
 	}
@@ -168,10 +160,12 @@ public class UserController {
 	@GetMapping("/userNewBooking")
 	public String goToNewBookingPage(HttpSession session, Model model) {
 		
-//		String username = (String) session.getAttribute("current_user");
-//		User user = userService.findUserByUsername(username);
-//		model.addAttribute("current_user", user);
 		model.addAttribute("current_user", session.getAttribute("current_user"));
+		
+		User user = (User) session.getAttribute("current_user");
+		
+		logger.info("User "+ user.getUsername() +" navigated to make new bookings page!");
+		logger.info("\n");
 		
 		model.addAttribute("roomTypesList", Room.getRoomTypesAsList());
 		  
@@ -186,22 +180,21 @@ public class UserController {
 			HttpSession session, Model model) {
 		
 		//making sure the data from input is correct
-		logger.info("Room Type is: "+ roomType);
-		logger.info("Check in date is "+checkInDate);
-		logger.info("Check out date is "+checkOutDate);
+		logger.info("Chosen Room Type is: "+ roomType);
+		logger.info("Chosen Check in date is "+checkInDate);
+		logger.info("Chosen Check out date is "+checkOutDate);
 		
 		// set model to session
-//		String username = (String) session.getAttribute("current_user");
-//		User user = userService.findUserByUsername(username);
-//		model.addAttribute("current_user", user);
 		model.addAttribute("current_user", session.getAttribute("current_user"));
 		User user = (User) session.getAttribute("current_user");
 		
 		// date validity check
 		if(checkInDate.isBlank() || checkOutDate.isBlank()) {
+			logger.info("Either one of the dates are empty!");
 			return"redirect:/userNewBookingAgainEmptyDates";
 		}
 		else if (!dateService.checkIfStartDateBeforeEndDate(checkInDate, checkOutDate)) {
+			logger.info("Start date is same or after end date!");
 			return "redirect:/userNewBookingAgainWrongDates";
 		}
 		
@@ -210,17 +203,14 @@ public class UserController {
 		
 		// room availability check
 		
-		if(roomService.atLeastOneRoomWithDatesAvailable(rType, checkInDate, checkInDate)) {
+		if(roomService.atLeastOneRoomWithDatesAvailable(rType, checkInDate, checkOutDate)) {
+			
+			logger.info("There is at least one room of "+rType+" available for those dates!");
 			
 			Room room = roomService.getRoomWithAvailableDates(rType, checkInDate, checkOutDate);
-			logger.info("room chosen: " + room.getRoomId());
-			logger.info("Room reservedDates: "+ room.getReservedDates().toString());
 			LocalDate checkIn = dateService.convertFromStringToLocalDate(checkInDate);
 			LocalDate checkOut = dateService.convertFromStringToLocalDate(checkOutDate);
 			Booking booking = new Booking(user, room, checkIn,checkOut);
-			
-			logger.info("There is at least one room available for: "+rType);
-			logger.info("Booking tentative for:"+booking.toString());
 			
 			session.setAttribute("current_roomType", roomType);
 			session.setAttribute("current_checkIn", checkInDate);
@@ -230,6 +220,9 @@ public class UserController {
 			return "redirect:/bookingConfirmationPage";
 		} 
 		else {
+			
+			logger.info("There are no rooms of "+rType+" available for those dates!");
+			
 			return "redirect:/userNewBookingAgainDatesUnavailable";
 		}
 		
@@ -240,50 +233,63 @@ public class UserController {
 	@GetMapping("/userNewBookingAgainEmptyDates")
 	public String goToChooseBookingAgainEmptyDates(HttpSession session, Model model) {
 		
-//		String username = (String) session.getAttribute("current_user");
-//		User user = userService.findUserByUsername(username);
-//		model.addAttribute("current_user", user);
 		model.addAttribute("current_user", session.getAttribute("current_user"));
+		
+		User user = (User) session.getAttribute("current_user");
+		
+		logger.info("User "+ user.getUsername() +" sent to new booking again, empty date(s) page!");
+		logger.info("\n");
 		
 		model.addAttribute("roomTypesList", Room.getRoomTypesAsList());
 		
 		return"/userNewBookingAgainEmptyDates";
 	}
 	
+
+	
 	@GetMapping("/userNewBookingAgainWrongDates")
 	public String goToChooseBookingAgainWrongDates(HttpSession session, Model model) {
 		
-//		String username = (String) session.getAttribute("current_user");
-//		User user = userService.findUserByUsername(username);
-//		model.addAttribute("current_user", user);
 		model.addAttribute("current_user", session.getAttribute("current_user"));
+		
+		User user = (User) session.getAttribute("current_user");
+		
+		logger.info("User "+ user.getUsername() +" sent to new booking again, wrong dates page!");
+		logger.info("\n");
 		
 		model.addAttribute("roomTypesList", Room.getRoomTypesAsList());
 		
 		return"/userNewBookingAgainWrongDates";
 	}
 	
+
+	
 	@GetMapping("/userNewBookingAgainDatesUnavailable")
 	public String goToChooseBookingAgainDatesUnavailable(HttpSession session, Model model) {
 		
-//		String username = (String) session.getAttribute("current_user");
-//		User user = userService.findUserByUsername(username);
-//		model.addAttribute("current_user", user);
 		model.addAttribute("current_user", session.getAttribute("current_user"));
+		
+		User user = (User) session.getAttribute("current_user");
+		
+		logger.info("User "+ user.getUsername() +" sent to new booking again, unavailable dates page!");
+		logger.info("\n");
 		
 		model.addAttribute("roomTypesList", Room.getRoomTypesAsList());
 		
 		return"/userNewBookingAgainDatesUnavailable";
 	}
 	
+
+	
 	@GetMapping("/bookingConfirmationPage")
 	public String goToConfirmationPage(HttpSession session, Model model) {
 		
-//		String username = (String) session.getAttribute("current_user");
-//		User user = userService.findUserByUsername(username);
-//		model.addAttribute("current_user", user);
-		
 		model.addAttribute("current_user", session.getAttribute("current_user"));
+		
+		User user = (User) session.getAttribute("current_user");
+		
+		logger.info("User "+ user.getUsername() +" sent to booking confirmation page!");
+		
 		
 		String rType = (String) session.getAttribute("current_roomType");
 		model.addAttribute("current_roomType", rType);
@@ -294,6 +300,9 @@ public class UserController {
 		String checkOutDate = (String) session.getAttribute("current_checkOut");
 		model.addAttribute("current_checkOutDate", checkOutDate);
 		
+		logger.info("The booking is tentatively for " + rType + " starting "+ checkInDate + " and ending on "+checkOutDate);
+		logger.info("\n");
+		
 		return "/bookingConfirmationPage";
 		
 	}
@@ -301,9 +310,6 @@ public class UserController {
 	@PostMapping("/bookingConfirmationPage")
 	public String confirmationBooking(HttpSession session, Model model) {
 		
-//		String username = (String) session.getAttribute("current_user");
-//		User user = userService.findUserByUsername(username);
-//		model.addAttribute("current_user", user);
 		model.addAttribute("current_user", session.getAttribute("current_user"));
 		User user = (User) session.getAttribute("current_user");
 		
@@ -329,6 +335,9 @@ public class UserController {
 		
 		session.setAttribute("booking",booking);
 		
+		logger.info("The booking is confirmed for " + rType + " starting "+ checkInDate + " and ending on "+checkOutDate);
+		logger.info("\n");
+		
 		return "redirect:/afterBookingPage";
 		
 	}
@@ -336,12 +345,12 @@ public class UserController {
 	@GetMapping("/afterBookingPage")
 	public String goToAfterBookingPage(HttpSession session,  Model model) {
 		
-//		String username = (String) session.getAttribute("current_user");
-//		User user = userService.findUserByUsername(username);
-//		model.addAttribute("current_user", user);
 		model.addAttribute("current_user", session.getAttribute("current_user"));
 		
 		User user = (User) session.getAttribute("current_user");
+		
+		logger.info("User "+ user.getUsername() +" sent to after booking page!");
+		logger.info("\n");
 		
 		String rType = (String) session.getAttribute("current_roomType");
 		model.addAttribute("current_roomType", rType);
@@ -360,7 +369,7 @@ public class UserController {
 	
 	
 	
-	// apparently no need after spring security
+	// apparently no need after spring security...? Just keep for future reference on how to invalidate session.
 	@GetMapping("/logout")
 	public String logout(HttpSession session) {
 		

@@ -12,7 +12,6 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
-import com.fdmgroup.hotelBookingProject.security.CustomAuthenticationFailureHandler;
 import com.fdmgroup.hotelBookingProject.security.MyUserDetailsService;
 
 @Configuration
@@ -45,7 +44,6 @@ public class SpringSecurityConfig {
 						.successHandler((request, response, authentication) -> {
 			                response.sendRedirect("/userHomePage");
 			            })
-						.failureHandler(new CustomAuthenticationFailureHandler())
 			            .permitAll()
 						.and().logout().invalidateHttpSession(true).clearAuthentication(true)
 						.logoutRequestMatcher(new AntPathRequestMatcher("/logout")).logoutSuccessUrl("/index")

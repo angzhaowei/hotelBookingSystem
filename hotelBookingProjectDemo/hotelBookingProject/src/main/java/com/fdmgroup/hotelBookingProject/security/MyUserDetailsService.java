@@ -30,7 +30,5 @@ public class MyUserDetailsService implements UserDetailsService {
 		
 	}
 	
-	// spring security needs 2 things:
-	// user principal, and user details service
 
 }
