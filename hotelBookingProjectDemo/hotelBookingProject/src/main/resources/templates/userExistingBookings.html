@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns:th=http://thymeleaf.org>
+<head>
+<meta charset="UTF-8">
+<link href = "css/styles.css" rel = "stylesheet"/>
+<title>Existing Bookings</title>
+</head>
+<body>
+
+ 	<div class="wrapper">
+	<div class="container">
+	<h2>Existing Bookings</h2>
+	
+	<p><span th:text="${current_user.username}"></span></p>
+	
+<!-- 	<p>Here are your existing bookings: </p>
+	<div th:each="current_user : ${current_user.bookings}">
+		<p th:text=${current_user.roomBooked}/>
+		<p th:text=${current_user.bookedDates}/>
+	
+	</div> -->
+	
+	<h2>User Bookings</h2>
+	<table>
+		<tr>
+			<th>Booking Id</th>
+			<th>Room Type</th>
+			<th>Room Id</th>
+			<th>Check-in</th>
+			<th>Check-out</th>
+		</tr>
+		<tbody>
+			<tr th:each="booking : ${current_user.bookings}">
+					<td th:text="${booking.bookingId}"></td>
+					<td th:text="${booking.roomBooked.roomType}"></td>
+					<td th:text="${booking.roomBooked.roomId}"></td>
+					<td th:text="${booking.checkInDate}"></td>
+					<td th:text="${booking.checkOutDate}"></td>
+				</tr>
+			</tbody>
+		</tbody>
+	</table>
+
+	
+	<a href="userNewBooking" class="button">Click here to make a new booking</a>
+	
+	<p></p>
+	
+	<a href="logout">Click here to logout</a>
+	
+	</div>
+	</div>
+	
+	
+
+</body>
+</html>
